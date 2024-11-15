@@ -36,7 +36,7 @@ def get_avg_salary_by_job_title(employee_salary_df: pd.DataFrame, selected_title
     
     #Plot the graph
     st.subheader("Average Salary by Job Title")
-    st.bar_chart(avg_salary_by_job_title, x = 'Job', y = 'YearlyCompensation')
+    st.bar_chart(avg_salary_by_job_title, x = 'JobTitle', y = 'YearlyCompensation')
 
 
 #TODO: MAKE THIS USING THE MODEL FUNCTION ABOVE (Copy pasting is your friend here)
@@ -51,6 +51,45 @@ def get_num_employees_by_country(employee_salary_df: pd.DataFrame, selected_coun
 #TODO: MAKE THIS USING THE MODEL FUNCTION ABOVE (Copy pasting is your friend here)
 def get_num_employees_by_job_title(employee_salary_df: pd.DataFrame, selected_titles: list):
     pass
+def get_avg_salary_by_country(employee_salary_df: pd.DataFrame, selected_countries: list):
+    """Creates the multi-select filter widget to select countries, and creates the graph that displays
+    average salary by country.
+    """
+    # Filter the dataframe based on selected countries
+    filtered_df = employee_salary_df[employee_salary_df['Country'].isin(selected_countries)]
+
+    # Group by Country and calculate the average salary
+    avg_salary_by_country = filtered_df.groupby('Country')['YearlyCompensation'].mean().reset_index()
+    
+    # Plot the graph
+    st.subheader("Average Salary by Country")
+    st.bar_chart(avg_salary_by_country, x='Country', y='YearlyCompensation')
+
+def get_num_employees_by_country(employee_salary_df: pd.DataFrame, selected_countries: list):
+    """Creates the graph that displays the number of employees by country."""
+    # Filter the dataframe based on selected countries
+    filtered_df = employee_salary_df[employee_salary_df['Country'].isin(selected_countries)]
+
+    # Group by Country and calculate the number of employees
+    num_employees_by_country = filtered_df.groupby('Country')['EmployeeId'].nunique().reset_index()
+    num_employees_by_country.columns = ['Country', 'EmployeeCount']  # Rename columns for clarity
+    
+    # Plot the graph
+    st.subheader("Number of Employees by Country")
+    st.bar_chart(num_employees_by_country, x='Country', y='EmployeeCount')
+
+def get_num_employees_by_job_title(employee_salary_df: pd.DataFrame, selected_titles: list):
+    """Creates the graph that displays the number of employees by job title."""
+    # Filter the dataframe based on selected job titles
+    filtered_df = employee_salary_df[employee_salary_df['JobTitle'].isin(selected_titles)]
+
+    # Group by JobTitle and calculate the number of employees
+    num_employees_by_job_title = filtered_df.groupby('JobTitle')['EmployeeId'].nunique().reset_index()
+    num_employees_by_job_title.columns = ['JobTitle', 'EmployeeCount']  # Rename columns for clarity
+    
+    # Plot the graph
+    st.subheader("Number of Employees by Job Title")
+    st.bar_chart(num_employees_by_job_title, x='JobTitle', y='EmployeeCount')
 
 if __name__ == '__main__':
     # Streamlit app title
@@ -59,25 +98,25 @@ if __name__ == '__main__':
     num_employees = get_num_employees()
     st.write(f"Total number of employees = {num_employees}")
 
-    #Employee DataFrame
+    # Employee DataFrame
     employee_salary_df = get_employee_dataframe()
 
     # Get unique job titles from the dataframe and make a multiselect filter for them
     job_titles = employee_salary_df['JobTitle'].unique()
     selected_titles = st.multiselect('Select Job Title', job_titles, default=job_titles)
     
-    #Avg salary by job title graph
+    # Average salary by job title graph
     get_avg_salary_by_job_title(employee_salary_df, selected_titles)
     
-    #Number of employees by job title graph
-    get_num_employees_by_job_title(employee_salary_df, selected_titles )
+    # Number of employees by job title graph
+    get_num_employees_by_job_title(employee_salary_df, selected_titles)
 
-    # Get unique contries from the dataframe and make a multiselect filter for them
+    # Get unique countries from the dataframe and make a multiselect filter for them
     countries = employee_salary_df['Country'].unique()
     selected_countries = st.multiselect('Select Countries', countries, default=countries)
 
-    #Avg salary by country graph
+    # Average salary by country graph
     get_avg_salary_by_country(employee_salary_df, selected_countries)
 
-    #Number of employees by country graph
+    # Number of employees by country graph
     get_num_employees_by_country(employee_salary_df, selected_countries)
